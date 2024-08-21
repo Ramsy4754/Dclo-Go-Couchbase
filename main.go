@@ -30,6 +30,10 @@ type InventoryRequest struct {
 	AccountID string `json:"accountId"`
 	Service   string `json:"service"`
 	Resource  string `json:"resource"`
+
+	EndPoint string `json:"endPoint"`
+	UserName string `json:"userName"`
+	Password string `json:"password"`
 }
 
 func GetRunEnv() string {
@@ -37,16 +41,12 @@ func GetRunEnv() string {
 	return runEnv
 }
 
-func connectToCluster(env string) (*gocb.Cluster, error) {
+func connectToCluster(env string, req *InventoryRequest) (*gocb.Cluster, error) {
 	var connectionString, username, password string
-	if env == "dev" {
-		connectionString = "couchbase://172.30.52.181"
-		username = "dclo"
-		password = "ninja@3731"
-	} else if env == "prod" {
-		connectionString = "couchbase://172.30.38.228"
-		username = "dclo"
-		password = "ninja@3731"
+	if env == "dev" || env == "prod" {
+		connectionString = fmt.Sprintf("couchbase://%s", req.EndPoint)
+		username = req.UserName
+		password = req.Password
 	} else {
 		connectionString = "couchbase://localhost"
 		username = "Administrator"
@@ -67,7 +67,8 @@ func GetInventoryDetail(c *fiber.Ctx, logger *log.Logger) error {
 
 	runEnv := GetRunEnv()
 	logger.Println("running env:", runEnv)
-	cluster, err := connectToCluster(runEnv)
+	logger.Println("request:", req)
+	cluster, err := connectToCluster(runEnv, req)
 	if err != nil {
 		logger.Println("Error connecting to cluster:", err)
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": err.Error()})
