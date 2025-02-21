@@ -62,7 +62,7 @@ func connectToCluster(env string, req *InventoryRequest) (*gocb.Cluster, error) 
 	var connectionString, username, password string
 	switch env {
 	case "dev", "prod", "on-prem":
-		connectionString = fmt.Sprintf("couchbase://%s", req.EndPoint)
+		connectionString = fmt.Sprintf("%s", req.EndPoint)
 		username = req.UserName
 		password = req.Password
 	default:
@@ -70,9 +70,6 @@ func connectToCluster(env string, req *InventoryRequest) (*gocb.Cluster, error) 
 		username = "Administrator"
 		password = "1234qwer!"
 	}
-	log.Println("connect to cluster:", connectionString)
-	log.Println("username:", username)
-	log.Println("password:", password)
 	return gocb.Connect(connectionString, gocb.ClusterOptions{
 		Username: username,
 		Password: password,

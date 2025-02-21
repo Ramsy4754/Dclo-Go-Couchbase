@@ -1,3 +1,3 @@
 set GOARCH=amd64
 set GOOS=linux
-go build -o go_couchbase
+go build -o couchbase_bridge
