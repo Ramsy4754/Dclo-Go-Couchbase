@@ -15,3 +15,7 @@ SET GOOS=linux
 SET GOARCH=arm
 go build -o go_couchbase
 ```
+
+# Application Name
+
+couchbase_bridge

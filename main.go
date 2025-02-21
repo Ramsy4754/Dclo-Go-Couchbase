@@ -70,6 +70,9 @@ func connectToCluster(env string, req *InventoryRequest) (*gocb.Cluster, error) 
 		username = "Administrator"
 		password = "1234qwer!"
 	}
+	log.Println("connect to cluster:", connectionString)
+	log.Println("username:", username)
+	log.Println("password:", password)
 	return gocb.Connect(connectionString, gocb.ClusterOptions{
 		Username: username,
 		Password: password,
