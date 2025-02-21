@@ -13,7 +13,13 @@ func createLogger() *log.Logger {
 	var logPath string
 	switch runEnv {
 	case "dev", "prod":
-		logPath = "/app/logs/couchbase_bridge.log"
+		if _, err := os.Stat("/app/couchbase/logs"); os.IsNotExist(err) {
+			err = os.MkdirAll("/app/couchbase/logs", 0755)
+			if err != nil {
+				log.Fatalf("Failed to create log directory: %v", err)
+			}
+		}
+		logPath = "/app/couchbase/logs/couchbase_bridge.log"
 	case "on-prem":
 		logPath = "/home/ubuntu/couchbase_bridge.log"
 	case "local":
