@@ -1,3 +1,3 @@
-set GOARCH=arm64
+set GOARCH=amd64
 set GOOS=linux
 go build -o go_couchbase

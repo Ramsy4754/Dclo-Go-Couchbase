@@ -9,13 +9,24 @@ import (
 )
 
 func createLogger() *log.Logger {
-	logFile, err := os.OpenFile("/home/ubuntu/app.log", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
+	runEnv := GetRunEnv()
+	var logPath string
+	switch runEnv {
+	case "dev", "prod":
+		logPath = "/app/logs/couchbase_bridge.log"
+	case "on-prem":
+		logPath = "/home/ubuntu/couchbase_bridge.log"
+	case "local":
+		logPath = "couchbase_bridge.log"
+	default:
+		panic("invalid run env: " + runEnv + "")
+	}
+	logFile, err := os.OpenFile(logPath, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
 	if err != nil {
 		log.Fatalf("error opening file: %v", err)
 	}
 
 	logger := log.New(logFile, "INFO: ", log.Ldate|log.Ltime|log.Lshortfile)
-
 	return logger
 }
 
@@ -43,11 +54,12 @@ func GetRunEnv() string {
 
 func connectToCluster(env string, req *InventoryRequest) (*gocb.Cluster, error) {
 	var connectionString, username, password string
-	if env == "dev" || env == "prod" {
+	switch env {
+	case "dev", "prod", "on-prem":
 		connectionString = fmt.Sprintf("couchbase://%s", req.EndPoint)
 		username = req.UserName
 		password = req.Password
-	} else {
+	default:
 		connectionString = "couchbase://localhost"
 		username = "Administrator"
 		password = "1234qwer!"
