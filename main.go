@@ -85,7 +85,7 @@ func GetInventoryDetail(c *fiber.Ctx, logger *log.Logger) error {
 
 	runEnv := GetRunEnv()
 	logger.Println("running env:", runEnv)
-	logger.Println("request:", req)
+	logger.Printf("%+v\n", req)
 	cluster, err := connectToCluster(runEnv, req)
 	if err != nil {
 		logger.Println("Error connecting to cluster:", err)
