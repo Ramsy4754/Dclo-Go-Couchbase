@@ -4,7 +4,7 @@ import (
 	"GoCouchbase/api"
 	"GoCouchbase/cluster"
 	"GoCouchbase/config"
-	"GoCouchbase/utils"
+	"GoCouchbase/utils/logutil"
 	"github.com/gofiber/fiber/v2"
 	"log"
 )
@@ -13,8 +13,8 @@ func main() {
 	_ = config.GetConfig()
 	_, _ = cluster.GetCluster()
 
-	logger := utils.GetInfoLogger()
-	logger.Println("Starting go couchbase server...")
+	logger := logutil.GetLogger()
+	logger.Println(logutil.Info, false, "Starting go couchbase server...")
 
 	app := fiber.New()
 	api.SetupRouter(app)

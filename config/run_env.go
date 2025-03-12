@@ -11,7 +11,7 @@ const (
 )
 
 func (r RunEnv) String() string {
-	return [...]string{"local", "dev", "prod", "on-prem"}[r]
+	return [...]string{"No Env", "local", "dev", "prod", "on-prem"}[r]
 }
 
 func StringToRunEnv(s string) RunEnv {

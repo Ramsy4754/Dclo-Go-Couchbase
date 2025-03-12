@@ -2,7 +2,7 @@ package cluster
 
 import (
 	"GoCouchbase/config"
-	"GoCouchbase/utils"
+	"GoCouchbase/utils/logutil"
 	"fmt"
 	"github.com/couchbase/gocb/v2"
 	"log"
@@ -27,11 +27,10 @@ func GetCluster() (*gocb.Cluster, error) {
 }
 
 func connect() (*gocb.Cluster, error) {
-	logger := utils.GetInfoLogger()
-	errLogger := utils.GetErrorLogger()
+	logger := logutil.GetLogger()
 	cfg := config.GetConfig()
 
-	logger.Println("Connecting to cluster...")
+	logger.Println(logutil.Info, false, "Connecting to cluster...")
 
 	cluster, err := gocb.Connect(cfg.CouchbaseConfig.URL, gocb.ClusterOptions{
 		Username: cfg.CouchbaseConfig.User,
@@ -39,7 +38,7 @@ func connect() (*gocb.Cluster, error) {
 	})
 
 	if err != nil {
-		errLogger.Println("Error connecting to cluster:", err)
+		logger.Println(logutil.Error, false, "Error connecting to cluster:", err)
 		return nil, err
 	}
 
@@ -48,20 +47,19 @@ func connect() (*gocb.Cluster, error) {
 		Timeout:      2 * time.Second,
 	})
 	if err != nil {
-		errLogger.Println("Error pinging the cluster:", err)
+		logger.Println(logutil.Error, false, "Error pinging the cluster:", err)
 		return nil, err
 	}
 
 	for service, reports := range pingResults.Services {
 		for _, report := range reports {
 			if report.State != gocb.PingStateOk {
-				errLogger.Println("Ping failed for service", service, ":", report.Error)
+				logger.Println(logutil.Error, false, "Ping failed for service", service, ":", report.Error)
 				return nil, fmt.Errorf("ping failed for service %v: %s", service, report.Error)
 			}
 		}
 	}
 
-	logger.Println("Ping successful. Cluster is reachable:", pingResults)
-
+	logger.Println(logutil.Info, false, "Connected to cluster.")
 	return cluster, nil
 }

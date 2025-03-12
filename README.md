@@ -23,7 +23,7 @@
 
 - `couchbase_bridge`를 사용하기 위해 필요한 port를 모두 port-forward 하는 경우
   ```shell
-  kubectl port-forward svc/couchbase -n dclo-cspm 8091:8091 8093:8093 8094:8094 11210:11210
+  kubectl port-forward svc/couchbase -n dclo-cspm 8091:8091 8092:8092 8093:8093 8094:8094 11210:11210
   ```
 
 - couchbase에서 사용하는 ports 중 일부를 추리면 다음과 같습니다.
