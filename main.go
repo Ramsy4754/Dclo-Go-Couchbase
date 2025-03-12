@@ -6,7 +6,9 @@ import (
 	"GoCouchbase/config"
 	"GoCouchbase/utils/logutil"
 	"github.com/gofiber/fiber/v2"
-	"log"
+	"os"
+	"os/signal"
+	"syscall"
 )
 
 func main() {
@@ -14,13 +16,23 @@ func main() {
 	_, _ = cluster.GetCluster()
 
 	logger := logutil.GetLogger()
-	logger.Println(logutil.Info, false, "Starting go couchbase server...")
+	logger.Println(logutil.Info, false, "Starting couchbase bridge server...")
 
 	app := fiber.New()
 	api.SetupRouter(app)
 
+	logger.Println(logutil.Info, false, "Listening on port 8999...")
 	err := app.Listen(":8999")
 	if err != nil {
-		log.Fatalf("Failed to start server: %v", err)
+		logger.Fatalf("Failed to start server: %v", err)
 	}
+
+	quit := make(chan os.Signal, 1)
+	signal.Notify(quit, os.Interrupt, syscall.SIGTERM)
+
+	go func() {
+		<-quit
+		logger.Println(logutil.Info, false, "Shutting down couchbase bridge server...")
+		os.Exit(0)
+	}()
 }
